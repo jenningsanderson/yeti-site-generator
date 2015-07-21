@@ -9,12 +9,12 @@ class Page
 
 	def initialize(args)
 
-		file = File.read( args[:in] || './templates/sample.html' ).split('---')
+		file = File.read( args[:in] || 'templates/sample.html' ).split('---')
 		
 		@config = YAML.load file[1]
 		@content   = file[2]
 
-		@layout_file = config['layout'] || './templates/_layouts/default.liquid'
+		@layout_file = config['layout'] || 'templates/_layouts/default.liquid'
 	end
 
 	def parse_templates
