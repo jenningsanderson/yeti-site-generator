@@ -8,6 +8,7 @@ program
     .command('start')
     .description('Start an instance of a Yeti Listening Github Hook')
     .option('-s, --secret [secret]>', 'Secret matching the Github Secret', String, null)
+    .option('-c, --config <path/to/config.json>', 'Your configuration file', String, null)
     .action(function(src, options) {
       yeti.listen(src, options);
     })
