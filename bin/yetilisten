@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+
+var yeti = require('../lib'),
+    program = require('commander'),
+    fs = require('fs')
+
+program
+    .command('start')
+    .description('Start an instance of a Yeti Listening Github Hook')
+    .option('-s, --secret [secret]>', 'Secret matching the Github Secret', String, null)
+    .action(function(src, options) {
+      yeti.listen(src, options);
+    })
+
+
+program
+    .version('0.0.1')
+    .option('-d, --destination <path>', 'A destination for the rendered HTML', String, false)
+
+    if (!process.argv.slice(2).length) {
+      program.outputHelp();
+    }
+
+program.parse(process.argv)
