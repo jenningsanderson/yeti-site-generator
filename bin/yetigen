@@ -4,6 +4,8 @@ require 'rubygems'
 require 'commander/import'
 require_relative '../yetigen.rb'
 
+templates_path = File.dirname(__FILE__)+'/../templates'
+
 program :name, 'Yeti Site Generator'
 program :version, '0.1.1'
 program :description, 'A very simple gem which generates static html'
@@ -24,7 +26,7 @@ command :install do |c|
   c.description = 'Run the generator'
   c.action do |args, options|
   	Mkdir_p args[0] unless File.exists? args[0]
-    `cp -r ./templates/assets/* #{args[0]}`
+    `cp -r #{templates_path}/assets/* #{args[0]}`
   end
 end
 
@@ -35,11 +37,12 @@ command :preview do |c|
 	page = Page.new({in: args[0]})
 	page.parse_templates
 	page.parse_page
-	page.publish('destination' => 'templates/index.html')
+
+	page.publish('destination' => templates_path + '/index.html')
 	Thread.new do
       sleep 1
       `open 'http://localhost:3003'`
     end
-  	`ruby -run -e httpd ./templates/ -p 3003`
+  	`ruby -run -e httpd #{templates_path} -p 3003`
   end
 end
