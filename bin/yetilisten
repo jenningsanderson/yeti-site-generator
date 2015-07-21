@@ -13,7 +13,6 @@ program
       yeti.listen(src, options);
     })
 
-
 program
     .version('0.0.1')
     .option('-d, --destination <path>', 'A destination for the rendered HTML', String, false)
