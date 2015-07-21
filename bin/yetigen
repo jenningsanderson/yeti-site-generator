@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'commander/import'
+require_relative '../yetigen.rb'
+
+program :name, 'Yeti Site Generator'
+program :version, '0.1.0'
+program :description, 'A very simple gem which generates static html'
+
+command :build do |c|
+  c.syntax = 'yetigen build'
+  c.description = 'Default?'
+  c.action do |args, options|
+    page = Page.new({in: args[0]})
+	page.parse_templates
+	page.parse_page
+	page.publish
+  end
+end

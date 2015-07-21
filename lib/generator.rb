@@ -1,34 +1,37 @@
 require 'liquid'
-
+require 'yaml'
 
 class Page
 
 	Liquid::Template.file_system = Liquid::LocalFileSystem.new('./templates/_includes') 
  
-	attr_reader :layout_file, :head_file, :header_file, :footer_file
+	attr_reader :layout_file, :config, :content, :page
 
 	def initialize(args)
-		@layout_file = args[:layout] || './templates/_layouts/default.liquid'
+
+		file = File.read( args[:in] || './templates/sample.html' ).split('---')
+		
+		@config = YAML.load file[1]
+		@content   = file[2]
+
+		@layout_file = config['layout'] || './templates/_layouts/default.liquid'
 	end
 
 	def parse_templates
-
-		# @head   = Liquid::Template.parse File.read (head_file)
-		# @header = Liquid::Template.parse File.read (header_file)
-		# @footer = Liquid::Template.parse File.read (footer_file)
-		
-		@page = Liquid::Template.parse File.read(layout_file) 
+		@template = Liquid::Template.parse File.read(layout_file) 
 	end
 
-	# def render_partials
-	# 	@head.render(data)
-	# 	@header.render(data)
-	# 	@footer.render(data)
-	# end
+	def parse_page
+		@page = Liquid::Template.parse( content )
+	end
 
 	def render
-		@page.render('content'=> "testing")
+		@template.render( {'content' => page.render}.merge config)
+	end
+
+	def publish
+		File.open(config['destination'],'wb') do |f|
+			f.write self.render
+		end
 	end
 end
-
-
