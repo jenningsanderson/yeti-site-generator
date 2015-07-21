@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'commander/import'
+require 'fileutils'
 require_relative '../yetigen.rb'
 
 templates_path = File.dirname(__FILE__)+'/../templates'
@@ -25,7 +26,7 @@ command :install do |c|
   c.syntax = 'yeti install [path]'
   c.description = 'Run the generator'
   c.action do |args, options|
-  	File.mkdir_p args[0] unless File.exists? args[0]
+  	FileUtils.mkdir_p args[0] unless File.exists? args[0]
     `cp -r #{templates_path}/assets/* #{args[0]}`
   end
 end
