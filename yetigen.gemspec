@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name              = "Yeti Site Generator"
-  s.version           = "0.1.0"
+  s.version           = "0.1.1"
   s.platform          = Gem::Platform::RUBY
   s.authors           = ["Jennings Anderson"]
   s.email             = ["jennings.anderson@colorado.edu"]
@@ -13,11 +13,11 @@ Gem::Specification.new do |s|
   # If you have runtime dependencies, add them here
   s.add_runtime_dependency "yaml"
   s.add_runtime_dependency "liquid" #This is an important dependency to allow the geo calculations
+  s.add_runtime_dependency "commander"
 
   # The list of files to be contained in the gem
   s.files         = `git ls-files`.split("\n")
   s.executables   = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
 
   s.require_path = 'lib'
-
 end

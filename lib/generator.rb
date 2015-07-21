@@ -29,7 +29,8 @@ class Page
 		@template.render( {'content' => page.render}.merge config)
 	end
 
-	def publish
+	def publish(args = {})
+		config.merge! args
 		File.open(config['destination'],'wb') do |f|
 			f.write self.render
 		end

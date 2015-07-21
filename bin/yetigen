@@ -5,16 +5,41 @@ require 'commander/import'
 require_relative '../yetigen.rb'
 
 program :name, 'Yeti Site Generator'
-program :version, '0.1.0'
+program :version, '0.1.1'
 program :description, 'A very simple gem which generates static html'
 
 command :build do |c|
-  c.syntax = 'yetigen build'
-  c.description = 'Default?'
+  c.syntax = 'yetigen build [file]'
+  c.description = 'Run the generator'
   c.action do |args, options|
     page = Page.new({in: args[0]})
 	page.parse_templates
 	page.parse_page
 	page.publish
+  end
+end
+
+command :install do |c|
+  c.syntax = 'yeti install [path]'
+  c.description = 'Run the generator'
+  c.action do |args, options|
+  	`mkdir #{args[0]}`
+    `cp -r ./templates/assets/* #{args[0]}`
+  end
+end
+
+command :preview do |c|
+  c.syntax = 'yeti preview [path]'
+  c.description = 'Build & Serve'
+  c.action do |args, options|
+	page = Page.new({in: args[0]})
+	page.parse_templates
+	page.parse_page
+	page.publish('destination' => 'templates/index.html')
+	Thread.new do
+      sleep 1
+      `open 'http://localhost:3003'`
+    end
+  	`ruby -run -e httpd ./templates/ -p 3003`
   end
 end
