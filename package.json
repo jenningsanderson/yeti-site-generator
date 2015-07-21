@@ -18,6 +18,7 @@
   "homepage": "https://github.com/jenningsanderson/yeti-site-generator",
   "dependencies": {
     "commander": "^2.8.1",
-    "github-hook": "^1.0.1"
+    "github-hook": "^1.0.1",
+    "github-webhook-handler": "^0.5.0"
   }
 }
