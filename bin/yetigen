@@ -25,7 +25,7 @@ command :install do |c|
   c.syntax = 'yeti install [path]'
   c.description = 'Run the generator'
   c.action do |args, options|
-  	mkdir_p args[0] unless File.exists? args[0]
+  	File.mkdir_p args[0] unless File.exists? args[0]
     `cp -r #{templates_path}/assets/* #{args[0]}`
   end
 end
