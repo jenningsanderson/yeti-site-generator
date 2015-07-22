@@ -14,8 +14,8 @@ class Page
 		@config = YAML.load file[1]
 		@content   = file[2]
 
-		unless config['layout'].nil?
-			@layout_file = File.dirname(__FILE__) + '/../templates/_layouts/default.liquid'
+		if config['layout'].nil?
+			@layout_file = File.dirname(__FILE__) + "/../templates/_layouts/default.liquid"
 		else
 			@layout_file = File.dirname(__FILE__) + "/../templates/_layouts/#{config['layout']}.liquid"
 		end
