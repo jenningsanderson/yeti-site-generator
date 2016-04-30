@@ -1,18 +1,37 @@
-Yeti Site Generator
-===================
+Yeti Site Builder
+=================
+
+A collection of 
+
+
+Yeti-Pages
+----------
+
+
+
+
+
+
+
+
+
+
+
+Site-Generator
+--------------
 A Very lightweight static website generator built on the Liquid Templating Engine.
 
-##Installation
+### Installation
 1. Clone the repository
 2. Run ```npm install``` to install the node dependencies.
 
 
-##Building a Page
+### Building a Page
 
 	yetigen build <path/to/page.html>
 
 
-###Structure of a Yeti Page
+#### Structure of a Yeti Page
 
 Pages contain YAML frontmatter which is parsed and available as variables within the page. This works the same way as Jekyll.
 	
@@ -28,10 +47,10 @@ Pages contain YAML frontmatter which is parsed and available as variables within
 
 	<script>alert('yup')</alert>
 
-##Templates
+### Templates
 The ```templates``` directory contains both ```_layouts``` and ```_includes```, the namining conventions of ```.liquid``` and `_` are required to appease Liquid.  When a page builds, it will pull the layout from the frontmatter, so add layouts here.
 
-##Customization
+### Customization
 In templates, there is an assets folder with styles. By default, the templates search for an assets folder at the web root, so copy these assets there with the following command:
 	
 	yetigen install <path/to/assets/>
