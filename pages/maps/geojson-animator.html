@@ -1,0 +1,82 @@
+<html>
+<head>
+    <title>Map Some Tweets and Stuff - NonGL</title>
+    
+    <!-- Also Load jQuery -->
+    <!-- <script src="/assets/bower_components/assets/bower_components/jquery/dist/jquery.min.js"></script> -->
+    
+    <script src="../assets/js/d3.min.js"></script>
+    <script src="../assets/js/lodash.min.js"></script>
+    
+    <script src="../assets/mapbox/mapbox.js"></script>
+    <link rel="stylesheet" href="../assets/mapbox/mapbox.css">
+    
+    <style>
+        body { margin:0; padding:0; }
+        
+        #map { position:absolute; left: 200px; top:50px; right:300px; height:100%}    
+        
+        #brush-bounds { position: absolute: right:0;top:0;height:50px; background-color:orange; }
+        .ui-brush {background:#f8f8f8; position:absolute; top:0;right:200;left:200;height:50px;}
+        .brush .extent {stroke:#fff;fill-opacity:0.125;shape-rendering:crispEdges;}
+        
+        .filter-group{position:absolute; top:50px; left:0px; width: 200px; height:100%; overflow:scroll;}
+        .filter-group input[type=checkbox] + label {background-color: #3386c0;
+            display: block;
+            cursor: pointer;
+            padding: 5px;
+            margin: 2px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);}
+        .filter-group input[type=checkbox] { display: none; }
+        .filter-group input[type=checkbox] + label:hover{ background-color: red;}
+        .filter-group input[type=checkbox]:checked + label {background-color: yellow;}
+        
+        #content{position:absolute; right:0; top:50px; width:300px; height:100%; overflow:scroll; list-style-type:none;}
+        .content-item{display:block;margin:0px 0px 3px 2px; padding:1px;}
+        .content-item h4{margin:0; padding:0;}
+        .content-item p{margin:0; padding:0;}
+        .content-item h5{margin:0; padding:0;}
+        
+        #animate-button{position:absolute; top:0px; right:0px; z-index:100}
+        #stop-animate-button{position:absolute; top:30px; right:0px; z-index:100}
+        
+    </style>
+</head>
+
+<body>
+<div id='brush' class='ui-brush'></div> <!-- Brush is the top -->
+<div id='brush-bounds'></div>
+<div id='filter-group' class='filter-group'></div>
+<div id="map"></div>
+<ul id="content"></ul>
+<input id="animate-button"
+       name="Animate" 
+       type="button" 
+       value="Play" 
+       onclick="animateBrush()" />
+<input id="stop-animate-button"
+       name="stop-aniamte" 
+       type="button" 
+       value="Stop" 
+       onclick="clearBrush()" />
+<script>
+    L.mapbox.accessToken = 'pk.eyJ1IjoiamVubmluZ3NhbmRlcnNvbiIsImEiOiIzMHZndnpvIn0.PS-j7fRK3HGU7IE8rbLT9A';
+    var map = L.mapbox.map('map', null, {
+                maxZoom: 18
+            }).setView([22.76, -25.84], 3);
+    
+    var layers = {
+      Streets: L.mapbox.tileLayer('mapbox.streets').setOpacity(.6),
+      Outdoors: L.mapbox.tileLayer('mapbox.outdoors'),
+      Satellite: L.mapbox.tileLayer('mapbox.satellite').setOpacity(0.3)
+    };
+
+    layers.Satellite.addTo(map);
+    L.control.layers(layers).addTo(map);
+    
+</script>
+    
+<script src="js/geojson-animator.js"></script>
+
+</body>
+</html>

@@ -1,10 +1,13 @@
 //Retrieve the GET variables from the URL
 function getUrlVars() {var vars = {}; var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {vars[key] = value;}); return vars; }
 
+//http://stackoverflow.com/questions/1050720/adding-hours-to-javascript-date-object
+Date.prototype.addHours = function(h) {this.setTime(this.getTime() + (h*60*60*1000)); return this;}
+Date.prototype.subHours = function(h) {this.setTime(this.getTime() - (h*60*60*1000)); return this;}
+Date.prototype.addMinutes = function(m) {this.setTime(this.getTime() + (m*60*1000)); return this;}
+
 //Update the shown data depending on the selected users and the time bounds.
 function updateMap(){
-    
-    console.log("Updating the Map")
     
     var filters = [];
     
@@ -35,17 +38,20 @@ function updateMap(){
     }
     
     //Apply to the filters to the layer
-    pointDataOnMap.setFilter(apply_filters)
+    geoJSONDataOnMap.setFilter(apply_filters)
     
-    map.fitBounds(pointDataOnMap.getBounds());
+    //map.fitBounds(geoJSONDataOnMap.getBounds());
     
-    updateSideBarContent()
+    //updateSideBarContent()
     
  
 }
 
+
+
+
 function updateSideBarContent(){
-    layers = _.sortBy(pointDataOnMap.getLayers(), function(i){return i.feature.properties.time});
+    layers = _.sortBy(geoJSONDataOnMap.getLayers(), function(i){return i.feature.properties.time});
     var contents = document.getElementById('content')
     //Clear existing
     while(contents.firstChild){
@@ -59,8 +65,8 @@ function updateSideBarContent(){
             obj.setAttribute('class','content-item')
             obj.innerHTML = '<h4>' + layer.feature.properties.user + '</h4>' +
                             '<h5>' + new Date(layer.feature.properties.time) + '</h5>' + 
-                            '<p>'  + layer.feature.properties.text + '</p>' + 
-                            '<p>'  + JSON.stringify(layer.feature.geometry) + '</p>'
+                            '<p>'  + layer.feature.properties.text + '</p>' //+ 
+                           // '<p>'  + JSON.stringify(layer.feature.geometry) + '</p>'
         contents.appendChild(obj)
     });
     
@@ -75,6 +81,8 @@ function setBrush(data) {
     var timeExtent = d3.extent(data.features, function(d) {
         return d.properties.time;
     });
+    
+    var timeExtent = [timeExtent[0].subHours(1), timeExtent[1].addHours(1)]
 
     var svg = container.append('svg')
         .attr('width', width + margin.left + margin.right)
@@ -91,7 +99,7 @@ function setBrush(data) {
         .domain(timeExtent);
 
     brush.x(x)
-         .on('brushend', updateMap);
+         .on('brush', updateMap);
 
     context.selectAll('circle')
         .data(data.features)
@@ -114,58 +122,92 @@ function setBrush(data) {
         .attr('height', height);
 }
 
-function pointColor(feature) {
-    return colors20(feature.properties.user);
+function geoJSONStyle(feature){
+    return {color: colors20(feature.properties.user),
+            opacity: .9,
+            weight: 5}
 }
 
-function pointRadius(feature) {
-    return 5;
-}
-
-function pointMarker(feature, latlng) {
+function geoJSONPoint(feature, latlng){
     return L.circleMarker(latlng, {
-        radius: pointRadius(feature),
-        fillColor: pointColor(feature),
-        fillOpacity: 0.7,
-        weight: 0.5,
+        radius: 5,
+        fillColor: colors20(feature.properties.user),
+        fillOpacity: 1,
+        weight: 1,
         color: '#fff'
     }).bindPopup(
         '<h2>' + feature.properties.user + '</h2>' +
         '<h3>' + new Date(feature.properties.time) + '</h3>' + 
-        '<p>'  + feature.properties.text + '</p>');}
+        '<p>'  + feature.properties.text + '</p>');
+}
 
 
+function geoJSONPopUp(feature, layer){
+    layer.bindPopup(
+        '<h2>' + feature.properties.user + '</h2>' +
+        '<h3>' + new Date(feature.properties.time) + '</h3>' + 
+        '<p>'  + JSON.stringify(feature.properties.text) + '</p>');
+}
 
-/*
-     Global Variables   
-*/
+function animateBrush(){
+    console.log("yup, clicked me")
+    console.log(brush.x.max)
+    //Begin the animation?
+    //d3.select('body').transition().
+    var animator = setInterval(function(){
+        //Now in here, we can just programatically set the extent of the brush...
+        d3.select('body')
+            .call(brush.extent([brush.extent()[0].addMinutes(1), brush.extent()[1].addMinutes(1)]))
+            .call(brush.event)
+        
+//        if brush.extent()[0] > 
+    },100);
+}
 
+function clearBrush(animator){
+    console.log("Stopping the interval...")
+    window.clearInterval(animator)
+    brush.clear()
+}
+  
+/////////////////////   GLOBAL VARS    ////////////////////////
 var colors20 = d3.scale.category20();
 var filterGroup = document.getElementById('filter-group');
 var brush = d3.svg.brush();
+
 //var dataset = getUrlVars()['dataset'] || '/nbserver/chime_output/red_hook_geo_users/anneeoanneo.json'
 //var dataset = getUrlVars()['dataset'] || '/nbserver/chime_output/tweets_in_redhook.geojson'
-var dataset = getUrlVars()['dataset'] || '../sample_data/tweets_in_redhook.geojson'
+//var dataset = getUrlVars()['dataset'] || '../sample_data/tweets_in_redhook.geojson'
 
-var pointDataOnMap = L.mapbox.featureLayer(null, { pointToLayer: pointMarker }).addTo(map);
+var dataset = getUrlVars()['dataset'] || '../sample_data/haiti-ways-2.geojson'
 
+//var pointDataOnMap = L.mapbox.featureLayer(null, { pointToLayer: pointMarker }).addTo(map);
+
+var geoJSONDataOnMap = L.mapbox.featureLayer(null,{
+                                                style: geoJSONStyle,
+                                                pointToLayer: geoJSONPoint,
+                                                onEachFeature: geoJSONPopUp}).addTo(map);
 console.log("Dataset: " + dataset)
 
 
-// Main runtime( Load the json file and process)
 
+/////////////////////      Main runtime( Load the json file and process)
 d3.json(dataset, function(err, geojson) {
-
+    
+    // Set some valid default values for 'text' and 'time'
     geojson.features = geojson.features.map(function(d) {
-        d.properties.time = new Date(d.properties.time);
+        if (d.properties.time == undefined){ d.properties.time = new Date(d.properties.date)}else{d.properties.time = new Date(d.properties.time); }
+        if (d.properties.text == undefined){ d.properties.text = d.properties.comment; }
         d.properties.timeInt = d.properties.time.getTime();
         d.properties.layerColor = colors20(d.properties.user);
         return d;
     })
 
+    // Group the data for filtering what's visible
     var grouped      = _.groupBy(geojson.features,function(d){return d.properties.user})
     var users_with_counts = _.reverse(_.sortBy(_.map(grouped,function(k,v){return {user: v, feats: grouped[v].length}}),function(d){return d['feats']}))
 
+    //Create the labels on the left-hand-side
     users_with_counts.forEach(function(obj,idx){
         var input = document.createElement('input');
             input.type = 'checkbox';
@@ -183,8 +225,10 @@ d3.json(dataset, function(err, geojson) {
             });
     })
     
+    //Create the timeline
     setBrush(geojson)
     
     //Add the GeoJSON layer to the map
-    pointDataOnMap.setGeoJSON(geojson);
+    geoJSONDataOnMap.setGeoJSON(geojson);
+    map.fitBounds(geoJSONDataOnMap.getBounds());
 });
