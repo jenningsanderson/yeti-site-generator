@@ -9,7 +9,7 @@ return vars;
 
 map.on('style.load', function(){
     
-    var dataset = getUrlVars()['dataset'] || 'examples/earthquakes.geojson'
+    var dataset = getUrlVars()['dataset'] || '../sample_data/earthquakes.geojson'
     console.log("Dataset: " + dataset)
 
     // Add a new source from our GeoJSON data and set the
