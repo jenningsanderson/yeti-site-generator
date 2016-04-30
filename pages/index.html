@@ -1,0 +1,123 @@
+<html>
+<head>
+    <title>Yeti Pages</title>
+
+    <style type="text/css">
+        body{
+            text-align:center;
+            background-color:midnightblue;
+            font-family:monospace;
+        }
+        header{
+            width:60%;
+            margin: 0 auto;
+            padding: 10px;
+            background-color:darkgray;
+        }
+        footer{
+            width:60%;
+            margin: 0 auto;
+            padding: 10px;
+            background-color:darkgray;
+        }
+        section{
+            width:60%;
+            margin: 0 auto;
+            text-align:left;
+            background-color:lightcyan;
+            padding: 10px;
+        }
+        ul{
+            list-style-type:none;
+        }
+        
+        ol{
+            margin-left:30px;
+        }
+        
+        ol li{
+            margin: 10px;
+        }
+        
+        ol li a{
+            font-size:2em;
+            text-decoration:none;
+        }
+        
+        a:hover{
+            text-decoration:underline;
+        }
+        
+        section h1{
+            margin:0;padding:0;
+        }
+        section h2{
+            margin-left: 20px;
+        }
+    </style>
+	
+</head>
+
+<body>
+    <header>
+       <h1>Yeti Pages</h1>
+    </header>
+       <section id="about">
+           <h3>What is this?</h3>
+           <p>Yeti Pages is a collection of static HTML pages supporting a variety of visualization toolsets with Javascript integration.</p>
+           <p>Yeti Pages is built and maintained by Jennings Anderson with Project EPIC at the University of Colorado Boulder</p>
+       </section>
+
+       <section id="maps">
+        <h1>Dynamic Maps</h1>
+
+        <h2>Using MapboxGL</h2>
+           <p style="margin-left:20px;">Mapbox GL allows for smooth zooming and rendering of larger point datasets. </p>
+            <ol>
+                <li><a target="_blank" href="maps/dynamic-heatmap.html">Heat Map from GeoJSON Point Data</a></li>
+                <li><a target="_blank" href="maps/dynamic-tweet-viewer.html">Tweets</a></li>
+            </ol>
+
+        <h2>Using Mapbox JS</h2>
+           <p style="margin-left:20px;">Mapbox.js, built on top of Leaflet, allows more fine-grained control for animation and analysis of individual features </p>
+            <ol>
+                <li><a target="_blank" href="maps/geojson-viewer.html">GeoJSON Viewer</a></li>
+                <li><a target="_blank" href="maps/geojson-animator.html">GeoJSON Animator</a></li>
+            </ol>
+
+        <h3>Data Format: Valid GeoJSON Feature Collection</h3>
+           <p>Data will be filtered by the <strong>user</strong> and <strong>time</strong> fields</p>
+            <code><pre>
+{   "type": "FeatureCollection",
+    "features": 
+     [{"type": "Feature",
+       "properties" : {
+            "user" : "User1", 
+            "time" : "2010-01-14 08:35:40 UTC"
+        },
+        "geometry": {
+            "type":"Point",
+            "coordinates":[-72.2974886,18.6279188]
+        }
+       },
+       {"type": "Feature",
+        "properties" : {
+            "user" : "User2", 
+            "time" : "2010-01-16 88:31:30 UTC"
+        },
+        "geometry":{
+            "type":"LineString",
+            "coordinates":[
+                [-72.2987383,18.6258857],
+                [-72.2982478,18.6267062],
+                [-72.2975696,18.6277288],
+                [-72.2990369,18.6289575]
+             ]
+        }}]}
+            </pre></code>
+        </section>
+    <footer>
+        Copyright Jennings Anderson 2016
+    </footer>
+</body>
+</html>

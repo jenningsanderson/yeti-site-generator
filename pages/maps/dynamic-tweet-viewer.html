@@ -1,0 +1,57 @@
+<html>
+<head>
+    <title>Map Some Tweets and Stuff!</title>
+    
+    <!-- Dependencies (Straight from Mapbox) -->
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.16.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.16.0/mapbox-gl.css' rel='stylesheet' />
+    
+    <!-- https://www.mapbox.com/mapbox-gl-js/example/filter-markers/ -->
+
+    <!-- Also Load jQuery -->
+    <!-- <script src="/assets/bower_components/assets/bower_components/jquery/dist/jquery.min.js"></script> -->
+    
+    <script src="../assets/js/d3.min.js"></script>
+    <script src="../assets/js/lodash.min.js"></script>
+    
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; left: 200px; top:50px; width:1000px; height:100%}    
+        #brush-bounds { position: absolute: right:0;top:0;height:50px; background-color:orange; }
+        .ui-brush {background:#f8f8f8; position:absolute; top:0;right:200;left:200;height:50px;}
+        .brush .extent {stroke:#fff;fill-opacity:0.125;shape-rendering:crispEdges;}
+        
+        .filter-group{position:relative; clear:both; width:200px;}
+        .filter-group input[type=checkbox] + label {background-color: #3386c0;
+            display: block;
+            cursor: pointer;
+            padding: 5px;
+            margin: 2px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);}
+        .filter-group input[type=checkbox] { display: none; }
+        .filter-group input[type=checkbox] + label:hover{ background-color: red;}
+        .filter-group input[type=checkbox]:checked + label {background-color: yellow;}
+    </style>
+</head>
+
+<body>
+<div id='brush' class='ui-brush'></div>
+<div id='brush-bounds'></div>
+<div id='filter-group' class='filter-group'></div>
+<div id="map"></div>
+
+    
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiamVubmluZ3NhbmRlcnNvbiIsImEiOiIzMHZndnpvIn0.PS-j7fRK3HGU7IE8rbLT9A';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v8',
+    center: [-103.59179687498357, 40.66995747013945],
+    zoom: 3,
+});
+</script>
+    
+<script src="js/dynamic-tweet-viewer.js"></script>
+
+</body>
+</html>
