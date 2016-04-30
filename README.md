@@ -1,24 +1,42 @@
 Yeti Site Builder
 =================
-
-A collection of 
-
+A collection of scripts and templates for building simple and powerful webpages to visualize geographic data.
 
 Yeti-Pages
 ----------
+Stand-Alone (no compiling needed) HTML pages that can read from geojson datasets.
 
+The common format for the GeoJSON is: 
 
+    {   "type": "FeatureCollection",
+        "features": 
+         [{"type": "Feature",
+           "properties" : {
+                "user" : "User1", 
+                "time" : "2010-01-14 08:35:40 UTC"
+            },
+            "geometry": {
+                "type":"Point",
+                "coordinates":[-72.2974886,18.6279188]
+            }
+           },
+           {"type": "Feature",
+            "properties" : {
+                "user" : "User2", 
+                "time" : "2010-01-16 88:31:30 UTC"
+            },
+            "geometry":{
+                "type":"LineString",
+                "coordinates":[
+                    [-72.2987383,18.6258857],
+                    [-72.2982478,18.6267062],
+                    [-72.2975696,18.6277288],
+                    [-72.2990369,18.6289575]
+                 ]
+            }}]}
 
-
-
-
-
-
-
-
-
-Site-Generator
---------------
+Yeti-Site-Generator
+-------------------
 A Very lightweight static website generator built on the Liquid Templating Engine.
 
 ### Installation
