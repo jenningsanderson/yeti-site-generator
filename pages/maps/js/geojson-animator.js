@@ -2,87 +2,75 @@
 function getUrlVars() {var vars = {}; var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {vars[key] = value;}); return vars; }
 
 //http://stackoverflow.com/questions/1050720/adding-hours-to-javascript-date-object
-Date.prototype.addHours = function(h) {this.setTime(this.getTime() + (h*60*60*1000)); return this;}
-Date.prototype.subHours = function(h) {this.setTime(this.getTime() - (h*60*60*1000)); return this;}
-Date.prototype.addMinutes = function(m) {this.setTime(this.getTime() + (m*60*1000)); return this;}
+Date.prototype.addHours = function(h)   {this.setTime(this.getTime() + (h*60*60*1000)); return this;}
+Date.prototype.subHours = function(h)   {this.setTime(this.getTime() - (h*60*60*1000)); return this;}
+Date.prototype.addMinutes = function(m) {this.setTime(this.getTime() + (m*60*1000));  return this;}
 
-//Update the shown data depending on the selected users and the time bounds.
+//This is the update function that gets called on every brush move, so make sure it stays light...
 function updateMap(){
+    filters = []//Clear existing filters
     
-    var filters = [];
-    
-    //If the brush is not empty, then get the extents...
+    //If the brush is not empty, then get the extents and add the filter
     if (!brush.empty()){
         
         filters.push( function(f){return f.properties.time > brush.extent()[0]} )
         filters.push( function(f){return f.properties.time < brush.extent()[1]} )
         
         //Show the bounds of the brush
-        document.getElementById("brush-bounds").innerHTML = "<h4 style='float:left;margin-left:5px'>"+brush.extent()[0].toISOString()+"</h4>" + "<h4 style='float:right;margin-right:5px;'>"+brush.extent()[1].toISOString()+"</h4>";
+        //document.getElementById("brush-bounds").innerHTML = "<h4 style='float:left;margin-left:5px'>"+brush.extent()[0].toISOString()+"</h4>" + "<h4 style='float:right;margin-right:5px;'>"+brush.extent()[1].toISOString()+"</h4>";
     }
     
-    // Get the checked elements that are checked (separated by user properties.user by default)
+    //If user boxes are checked, then get the names and add them as a filter
     var checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
-
     if (checkedBoxes.length > 0){
         users = _.map(checkedBoxes, function(b){return b.id.toString()});
         filters.push(function(f){return users.indexOf(f.properties.user) >= 0})
     }
     
-    //filters is now an array of functions that better return true for every object
-    apply_filters = function(feature){
+    //Apply to the filters to the layer
+    geoJSONDataOnMap.setFilter(function(feature){
         for (idx in filters){
             if (filters[idx](feature) == false){return false}
         }
         return true
-    }
-    
-    //Apply to the filters to the layer
-    geoJSONDataOnMap.setFilter(apply_filters)
-    
-    //map.fitBounds(geoJSONDataOnMap.getBounds());
-    
-    //updateSideBarContent()
-    
- 
-}
-
-
-
-
-function updateSideBarContent(){
-    layers = _.sortBy(geoJSONDataOnMap.getLayers(), function(i){return i.feature.properties.time});
-    var contents = document.getElementById('content')
-    //Clear existing
-    while(contents.firstChild){
-      contents.removeChild(contents.firstChild);
-    }
-    
-    //Doesn't work to just go through the layers, because the _null_ doesn't exist there; but we can worry about that in the future?
-    layers.forEach(function(layer, idx){
-        var obj = document.createElement('li');
-            obj.id = 'content-object-' + idx.toString()
-            obj.setAttribute('class','content-item')
-            obj.innerHTML = '<h4>' + layer.feature.properties.user + '</h4>' +
-                            '<h5>' + new Date(layer.feature.properties.time) + '</h5>' + 
-                            '<p>'  + layer.feature.properties.text + '</p>' //+ 
-                           // '<p>'  + JSON.stringify(layer.feature.geometry) + '</p>'
-        contents.appendChild(obj)
     });
-    
-}
+}//end updateMap()
 
+
+//function updateSideBarContent(){
+//    layers = _.sortBy(geoJSONDataOnMap.getLayers(), function(i){return i.feature.properties.time});
+//    var contents = document.getElementById('content')
+//    //Clear existing
+//    while(contents.firstChild){
+//      contents.removeChild(contents.firstChild);
+//    }
+//    
+//    //Doesn't work to just go through the layers, because the _null_ doesn't exist there; but we can worry about that in the future?
+//    layers.forEach(function(layer, idx){
+//        var obj = document.createElement('li');
+//            obj.id = 'content-object-' + idx.toString()
+//            obj.setAttribute('class','content-item')
+//            obj.innerHTML = '<h4>' + layer.feature.properties.user + '</h4>' +
+//                            '<h5>' + new Date(layer.feature.properties.time) + '</h5>' + 
+//                            '<p>'  + layer.feature.properties.text + '</p>' //+ 
+//                           // '<p>'  + JSON.stringify(layer.feature.geometry) + '</p>'
+//        contents.appendChild(obj)
+//    });
+//    
+//}
+
+//Build and set the brush at the top of the page
 function setBrush(data) {
     var container = d3.select('#brush'),
         width = container.node().offsetWidth,
         margin = {top: 0, right: 0, bottom: 0, left: 0},
         height = 50;
 
-    var timeExtent = d3.extent(data.features, function(d) {
+    timeExtent = d3.extent(data.features, function(d) {
         return d.properties.time;
     });
     
-    var timeExtent = [timeExtent[0].subHours(1), timeExtent[1].addHours(1)]
+    timeExtent = [timeExtent[0].subHours(1), timeExtent[1].addHours(1)]
 
     var svg = container.append('svg')
         .attr('width', width + margin.left + margin.right)
@@ -124,13 +112,13 @@ function setBrush(data) {
 
 function geoJSONStyle(feature){
     return {color: colors20(feature.properties.user),
-            opacity: .9,
-            weight: 5}
+            opacity: 1,
+            weight: 3}
 }
 
 function geoJSONPoint(feature, latlng){
     return L.circleMarker(latlng, {
-        radius: 5,
+        radius: 2,
         fillColor: colors20(feature.properties.user),
         fillOpacity: 1,
         weight: 1,
@@ -149,32 +137,51 @@ function geoJSONPopUp(feature, layer){
         '<p>'  + JSON.stringify(feature.properties.text) + '</p>');
 }
 
+
+
+
+///////////////////////////////         ANIMATION FUNCTIONS
+
 function animateBrush(){
-    console.log("yup, clicked me")
-    console.log(brush.x.max)
-    //Begin the animation?
-    //d3.select('body').transition().
-    var animator = setInterval(function(){
-        //Now in here, we can just programatically set the extent of the brush...
-        d3.select('body')
-            .call(brush.extent([brush.extent()[0].addMinutes(1), brush.extent()[1].addMinutes(1)]))
+    console.log("Starting animation")
+    
+    non_cumulative = JSON.parse($('input[name="cumulative"]:checked').val());
+    minutes        = parseInt( $('input[name="minute-step"]').val() )
+    milliseconds   = parseInt( $('input[name="interval"]').val())
+    
+    console.log(timeExtent)
+    
+    animator = setInterval(function(){
+        //Always increment the tail extent
+        var new_extent = [ brush.extent()[0], brush.extent()[1].addMinutes(minutes) ]
+        //If we don't want to be cumulative, then increment the beginning
+        if(non_cumulative){ new_extent[0] = new_extent[0].addMinutes(minutes) }
+        d3.select('#brush')
+            .call(brush.extent(new_extent))
             .call(brush.event)
         
-//        if brush.extent()[0] > 
-    },100);
+       if(new_extent[1] > timeExtent[1]){window.clearInterval(animator)}
+        
+    },milliseconds);
 }
 
-function clearBrush(animator){
-    console.log("Stopping the interval...")
-    window.clearInterval(animator)
-    brush.clear()
+function stopAnimation(){
+    console.log("Stopping animation...")
+    var highestTimeoutId = setTimeout(";");
+        for (var i = 0 ; i < highestTimeoutId ; i++) {
+        clearTimeout(i); 
+    }
+    d3.select('#brush')
+            .call(brush.clear())
 }
   
 /////////////////////   GLOBAL VARS    ////////////////////////
 var colors20 = d3.scale.category20();
 var filterGroup = document.getElementById('filter-group');
 var brush = d3.svg.brush();
-
+var timeExtent = [];
+var filters = [];
+var animator;
 //var dataset = getUrlVars()['dataset'] || '/nbserver/chime_output/red_hook_geo_users/anneeoanneo.json'
 //var dataset = getUrlVars()['dataset'] || '/nbserver/chime_output/tweets_in_redhook.geojson'
 //var dataset = getUrlVars()['dataset'] || '../sample_data/tweets_in_redhook.geojson'
@@ -188,8 +195,6 @@ var geoJSONDataOnMap = L.mapbox.featureLayer(null,{
                                                 pointToLayer: geoJSONPoint,
                                                 onEachFeature: geoJSONPopUp}).addTo(map);
 console.log("Dataset: " + dataset)
-
-
 
 /////////////////////      Main runtime( Load the json file and process)
 d3.json(dataset, function(err, geojson) {
