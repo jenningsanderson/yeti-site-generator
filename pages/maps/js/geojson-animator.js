@@ -17,7 +17,7 @@ function updateMap(){
         filters.push( function(f){return f.properties.time < brush.extent()[1]} )
         
         //Show the bounds of the brush
-        //document.getElementById("brush-bounds").innerHTML = "<h4 style='float:left;margin-left:5px'>"+brush.extent()[0].toISOString()+"</h4>" + "<h4 style='float:right;margin-right:5px;'>"+brush.extent()[1].toISOString()+"</h4>";
+        document.getElementById("brush-bounds").innerHTML = "<h4 style='float:left;margin-left:5px'>"+brush.extent()[0].toISOString()+"</h4>" + "<h4 style='float:right;margin-right:5px;'>"+brush.extent()[1].toISOString()+"</h4>";
     }
     
     //If user boxes are checked, then get the names and add them as a filter
@@ -160,7 +160,7 @@ function animateBrush(){
             .call(brush.extent(new_extent))
             .call(brush.event)
         
-       if(new_extent[1] > timeExtent[1]){window.clearInterval(animator)}
+       if(new_extent[1] > timeExtent[1]){stopAnimation()}
         
     },milliseconds);
 }
